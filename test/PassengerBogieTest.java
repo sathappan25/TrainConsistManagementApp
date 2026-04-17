@@ -1,54 +1,141 @@
+import org.junit.Test;
+import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PassengerBogieTest {
 
-    public static void main(String[] args) {
-        int passed = 0, failed = 0;
+    @Test
+    public void testException_ValidCapacityCreation() throws InvalidCapacityException {
+        PassengerBogie bogie = new PassengerBogie("Sleeper", 72);
+        assertNotNull("Bogie should be created successfully", bogie);
+        assertEquals("Bogie type should be Sleeper", "Sleeper", bogie.getType());
+        assertEquals("Bogie capacity should be 72", 72, bogie.getCapacity());
+    }
 
-        // --- Test 1: Valid capacity ---
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_NegativeCapacityThrowsException() throws InvalidCapacityException {
+        new PassengerBogie("AC Chair", -10);
+    }
+
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_ZeroCapacityThrowsException() throws InvalidCapacityException {
+        new PassengerBogie("First Class", 0);
+    }
+
+    @Test
+    public void testException_ExceptionMessageValidation() {
         try {
-            PassengerBogie bogie1 = new PassengerBogie("Sleeper", 72);
-            System.out.println("Test 1 Passed: " + bogie1);
-            passed++;
+            new PassengerBogie("Sleeper", -5);
+            fail("Should have thrown InvalidCapacityException");
         } catch (InvalidCapacityException e) {
-            System.out.println("Test 1 Failed: " + e.getMessage());
-            failed++;
+            assertEquals("Exception message should match", 
+                "Capacity must be greater than zero", e.getMessage());
         }
+    }
 
-        // --- Test 2: Negative capacity ---
+    @Test
+    public void testException_ObjectIntegrityAfterCreation() throws InvalidCapacityException {
+        PassengerBogie bogie = new PassengerBogie("AC Chair", 50);
+        assertEquals("Type should be AC Chair", "AC Chair", bogie.getType());
+        assertEquals("Capacity should be 50", 50, bogie.getCapacity());
+    }
+
+    @Test
+    public void testException_MultipleValidBogiesCreation() throws InvalidCapacityException {
+        List<PassengerBogie> bogies = new ArrayList<>();
+        bogies.add(new PassengerBogie("Sleeper", 60));
+        bogies.add(new PassengerBogie("AC Chair", 50));
+        bogies.add(new PassengerBogie("First Class", 30));
+        
+        assertEquals("Should have 3 bogies", 3, bogies.size());
+        assertTrue("All bogies should be created successfully", 
+            bogies.stream().allMatch(b -> b.getCapacity() > 0));
+    }
+
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_LargeNegativeCapacity() throws InvalidCapacityException {
+        new PassengerBogie("Luxury", -100);
+    }
+
+    @Test
+    public void testException_BoundaryValueCityEqualToOne() throws InvalidCapacityException {
+        PassengerBogie bogie = new PassengerBogie("Sleeper", 1);
+        assertEquals("Capacity should be 1 (boundary value)", 1, bogie.getCapacity());
+    }
+
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_BoundaryValueZero() throws InvalidCapacityException {
+        new PassengerBogie("Sleeper", 0);
+    }
+}import org.junit.Test;
+import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PassengerBogieTest {
+
+    @Test
+    public void testException_ValidCapacityCreation() throws InvalidCapacityException {
+        PassengerBogie bogie = new PassengerBogie("Sleeper", 72);
+        assertNotNull("Bogie should be created successfully", bogie);
+        assertEquals("Bogie type should be Sleeper", "Sleeper", bogie.getType());
+        assertEquals("Bogie capacity should be 72", 72, bogie.getCapacity());
+    }
+
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_NegativeCapacityThrowsException() throws InvalidCapacityException {
+        new PassengerBogie("AC Chair", -10);
+    }
+
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_ZeroCapacityThrowsException() throws InvalidCapacityException {
+        new PassengerBogie("First Class", 0);
+    }
+
+    @Test
+    public void testException_ExceptionMessageValidation() {
         try {
-            PassengerBogie bogie2 = new PassengerBogie("AC Chair", -10);
-            System.out.println("Test 2 Failed: Created bogie with negative capacity!");
-            failed++;
+            new PassengerBogie("Sleeper", -5);
+            fail("Should have thrown InvalidCapacityException");
         } catch (InvalidCapacityException e) {
-            System.out.println("Test 2 Passed: " + e.getMessage());
-            passed++;
+            assertEquals("Exception message should match", 
+                "Capacity must be greater than zero", e.getMessage());
         }
+    }
 
-        // --- Test 3: Zero capacity ---
-        try {
-            PassengerBogie bogie3 = new PassengerBogie("First Class", 0);
-            System.out.println("Test 3 Failed: Created bogie with zero capacity!");
-            failed++;
-        } catch (InvalidCapacityException e) {
-            System.out.println("Test 3 Passed: " + e.getMessage());
-            passed++;
-        }
+    @Test
+    public void testException_ObjectIntegrityAfterCreation() throws InvalidCapacityException {
+        PassengerBogie bogie = new PassengerBogie("AC Chair", 50);
+        assertEquals("Type should be AC Chair", "AC Chair", bogie.getType());
+        assertEquals("Capacity should be 50", 50, bogie.getCapacity());
+    }
 
-        // --- Test 4: Multiple valid bogies ---
-        try {
-            List<PassengerBogie> list = new ArrayList<>();
-            list.add(new PassengerBogie("Sleeper", 60));
-            list.add(new PassengerBogie("AC Chair", 50));
-            list.add(new PassengerBogie("First Class", 30));
-            System.out.println("Test 4 Passed: Multiple bogies created successfully");
-            passed++;
-        } catch (InvalidCapacityException e) {
-            System.out.println("Test 4 Failed: " + e.getMessage());
-            failed++;
-        }
+    @Test
+    public void testException_MultipleValidBogiesCreation() throws InvalidCapacityException {
+        List<PassengerBogie> bogies = new ArrayList<>();
+        bogies.add(new PassengerBogie("Sleeper", 60));
+        bogies.add(new PassengerBogie("AC Chair", 50));
+        bogies.add(new PassengerBogie("First Class", 30));
+        
+        assertEquals("Should have 3 bogies", 3, bogies.size());
+        assertTrue("All bogies should be created successfully", 
+            bogies.stream().allMatch(b -> b.getCapacity() > 0));
+    }
 
-        System.out.println("\nSummary: Passed = " + passed + ", Failed = " + failed);
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_LargeNegativeCapacity() throws InvalidCapacityException {
+        new PassengerBogie("Luxury", -100);
+    }
+
+    @Test
+    public void testException_BoundaryValueCityEqualToOne() throws InvalidCapacityException {
+        PassengerBogie bogie = new PassengerBogie("Sleeper", 1);
+        assertEquals("Capacity should be 1 (boundary value)", 1, bogie.getCapacity());
+    }
+
+    @Test(expected = InvalidCapacityException.class)
+    public void testException_BoundaryValueZero() throws InvalidCapacityException {
+        new PassengerBogie("Sleeper", 0);
     }
 }
