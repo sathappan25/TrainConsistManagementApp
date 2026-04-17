@@ -276,4 +276,53 @@ public class BogieServiceTest {
         assertTrue("Search should work correctly for a single-element array",
                 service.searchBogieById(bogieIds, "BG101"));
     }
-}
+
+    @Test
+    public void testBinarySearch_BogieFound() {
+        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
+        assertTrue("Binary search should return true when the bogie ID exists",
+                service.binarySearchBogieById(bogieIds, "BG309"));
+    }
+
+    @Test
+    public void testBinarySearch_BogieNotFound() {
+        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
+        assertFalse("Binary search should return false when the bogie ID does not exist",
+                service.binarySearchBogieById(bogieIds, "BG999"));
+    }
+
+    @Test
+    public void testBinarySearch_FirstElementMatch() {
+        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
+        assertTrue("Binary search should find a match at the first position",
+                service.binarySearchBogieById(bogieIds, "BG101"));
+    }
+
+    @Test
+    public void testBinarySearch_LastElementMatch() {
+        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
+        assertTrue("Binary search should find a match at the last position",
+                service.binarySearchBogieById(bogieIds, "BG550"));
+    }
+
+    @Test
+    public void testBinarySearch_SingleElementArray() {
+        String[] bogieIds = { "BG101" };
+        assertTrue("Binary search should work correctly for a single-element array",
+                service.binarySearchBogieById(bogieIds, "BG101"));
+    }
+
+    @Test
+    public void testBinarySearch_EmptyArray() {
+        String[] bogieIds = new String[0];
+        assertFalse("Binary search should return false for an empty array",
+                service.binarySearchBogieById(bogieIds, "BG101"));
+    }
+
+    @Test
+    public void testBinarySearch_UnsortedInputHandled() {
+        String[] bogieIds = { "BG309", "BG101", "BG550", "BG205", "BG412" };
+        assertTrue("Binary search should sort unsorted input before searching",
+                service.binarySearchBogieById(bogieIds, "BG205"));
+    }
+} 
