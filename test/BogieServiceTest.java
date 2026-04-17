@@ -1,95 +1,201 @@
-import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class BogieServiceTest {
 
-    private static BogieService service = new BogieService();
+    private BogieService service;
 
-    public static void main(String[] args) {
-
-        System.out.println("Running UC10 Test Cases...\n");
-
-        testReduce_TotalSeatCalculation();
-        testReduce_MultipleBogiesAggregation();
-        testReduce_SingleBogieCapacity();
-        testReduce_EmptyBogieList();
-        testReduce_CorrectCapacityExtraction();
-        testReduce_AllBogiesIncluded();
-        testReduce_OriginalListUnchanged();
-
-        System.out.println("\nAll UC10 Tests Executed.");
+    @Before
+    public void setUp() {
+        service = new BogieService();
     }
 
-    private static List<Bogie> getSampleBogies() {
+    private List<Bogie> getSampleBogies() {
         List<Bogie> list = new ArrayList<>();
         list.add(new Bogie("Sleeper", 72));
         list.add(new Bogie("AC Chair", 56));
-        list.add(new Bogie("Sleeper", 70));
         list.add(new Bogie("First Class", 24));
+        list.add(new Bogie("Luxury", 80));
         return list;
     }
 
-    // Assertion helpers
-    private static void assertTrue(boolean condition, String testName) {
-        if (condition) {
-            System.out.println("✔ PASS: " + testName);
-        } else {
-            System.out.println("✘ FAIL: " + testName);
-        }
+    // ========== FilterByCapacity Tests (UC8) ==========
+
+    @Test
+    public void testFilter_CapacityGreaterThanThreshold() {
+        List<Bogie> result = service.filterByCapacity(getSampleBogies(), 70);
+        assertTrue("All filtered bogies should have capacity > 70",
+                result.stream().allMatch(b -> b.getCapacity() > 70));
     }
 
-    private static void assertEquals(int expected, int actual, String testName) {
-        if (expected == actual) {
-            System.out.println("✔ PASS: " + testName);
-        } else {
-            System.out.println("✘ FAIL: " + testName +
-                    " | Expected: " + expected + " but got: " + actual);
-        }
+    @Test
+    public void testFilter_CapacityEqualToThreshold() {
+        List<Bogie> result = service.filterByCapacity(getSampleBogies(), 72);
+        assertTrue("Bogies with capacity equal to threshold should be excluded",
+                result.stream().noneMatch(b -> b.getCapacity() == 72));
     }
 
-
-    static void testReduce_TotalSeatCalculation() {
-        int total = service.getTotalCapacity(getSampleBogies());
-        assertEquals(222, total, "Total seat calculation"); // 72+56+70+24
+    @Test
+    public void testFilter_CapacityLessThanThreshold() {
+        List<Bogie> result = service.filterByCapacity(getSampleBogies(), 60);
+        assertTrue("Bogies with capacity less than or equal to threshold should be excluded",
+                result.stream().noneMatch(b -> b.getCapacity() <= 60));
     }
 
-    static void testReduce_MultipleBogiesAggregation() {
-        int total = service.getTotalCapacity(getSampleBogies());
-        assertTrue(total > 0, "Multiple bogies aggregation");
+    @Test
+    public void testFilter_MultipleBogiesMatching() {
+        List<Bogie> result = service.filterByCapacity(getSampleBogies(), 50);
+        assertEquals("Should have exactly 3 bogies matching the filter", 3, result.size());
     }
 
-    static void testReduce_SingleBogieCapacity() {
-        List<Bogie> list = new ArrayList<>();
-        list.add(new Bogie("Sleeper", 72));
-
-        int total = service.getTotalCapacity(list);
-        assertEquals(72, total, "Single bogie capacity");
+    @Test
+    public void testFilter_NoBogiesMatching() {
+        List<Bogie> result = service.filterByCapacity(getSampleBogies(), 100);
+        assertTrue("Result should be empty when no bogies match threshold", result.isEmpty());
     }
 
-    static void testReduce_EmptyBogieList() {
-        int total = service.getTotalCapacity(new ArrayList<>());
-        assertEquals(0, total, "Empty bogie list");
+    @Test
+    public void testFilter_AllBogiesMatching() {
+        List<Bogie> result = service.filterByCapacity(getSampleBogies(), 10);
+        assertEquals("Should return all 4 bogies when threshold is very low", 4, result.size());
     }
 
-    static void testReduce_CorrectCapacityExtraction() {
-        List<Bogie> list = getSampleBogies();
-        int expected = 72 + 56 + 70 + 24;
-
-        int actual = service.getTotalCapacity(list);
-        assertEquals(expected, actual, "Correct capacity extraction");
+    @Test
+    public void testFilter_EmptyBogieList() {
+        List<Bogie> result = service.filterByCapacity(new ArrayList<>(), 50);
+        assertTrue("Result should be empty when input list is empty", result.isEmpty());
     }
 
-    static void testReduce_AllBogiesIncluded() {
-        List<Bogie> list = getSampleBogies();
-        int total = service.getTotalCapacity(list);
-
-        assertTrue(total == 222, "All bogies included");
-    }
-
-    static void testReduce_OriginalListUnchanged() {
+    @Test
+    public void testFilter_OriginalListUnchanged() {
         List<Bogie> original = getSampleBogies();
-        service.getTotalCapacity(original);
+        int originalSize = original.size();
+        service.filterByCapacity(original, 60);
+        assertEquals("Original list should not be modified by filter operation",
+                originalSize, original.size());
+    }
 
-        assertEquals(4, original.size(), "Original list unchanged");
+    // ========== GroupByType Tests (UC9) ==========
+
+    @Test
+    public void testGroupByType_CorrectGrouping() {
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("Sleeper", 72));
+        bogies.add(new Bogie("AC Chair", 56));
+        bogies.add(new Bogie("Sleeper", 60));
+
+        Map<String, List<Bogie>> grouped = service.groupByType(bogies);
+
+        assertTrue("Should contain 'Sleeper' group", grouped.containsKey("Sleeper"));
+        assertTrue("Should contain 'AC Chair' group", grouped.containsKey("AC Chair"));
+        assertEquals("Sleeper group should have 2 bogies", 2, grouped.get("Sleeper").size());
+        assertEquals("AC Chair group should have 1 bogie", 1, grouped.get("AC Chair").size());
+    }
+
+    @Test
+    public void testGroupByType_EmptyList() {
+        Map<String, List<Bogie>> grouped = service.groupByType(new ArrayList<>());
+        assertTrue("Grouped result should be empty for empty input", grouped.isEmpty());
+    }
+
+    @Test
+    public void testGroupByType_SingleType() {
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("Sleeper", 72));
+        bogies.add(new Bogie("Sleeper", 60));
+
+        Map<String, List<Bogie>> grouped = service.groupByType(bogies);
+
+        assertEquals("Should have only 1 group", 1, grouped.size());
+        assertEquals("Sleeper group should have 2 bogies", 2, grouped.get("Sleeper").size());
+    }
+
+    // ========== GetTotalCapacity Tests (UC10) ==========
+
+    @Test
+    public void testGetTotalCapacity_ValidBogies() {
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("Sleeper", 72));
+        bogies.add(new Bogie("AC Chair", 56));
+        bogies.add(new Bogie("First Class", 24));
+        bogies.add(new Bogie("Sleeper", 70));
+
+        int totalCapacity = service.getTotalCapacity(bogies);
+        assertEquals("Total capacity should be 222", 222, totalCapacity);
+    }
+
+    @Test
+    public void testGetTotalCapacity_EmptyList() {
+        int totalCapacity = service.getTotalCapacity(new ArrayList<>());
+        assertEquals("Total capacity of empty list should be 0", 0, totalCapacity);
+    }
+
+    @Test
+    public void testGetTotalCapacity_SingleBogie() {
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("Sleeper", 75));
+
+        int totalCapacity = service.getTotalCapacity(bogies);
+        assertEquals("Total capacity should be 75", 75, totalCapacity);
+    }
+
+    @Test
+    public void testGetTotalCapacity_LargeCapacities() {
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("Luxury", 100));
+        bogies.add(new Bogie("Luxury", 100));
+        bogies.add(new Bogie("Luxury", 100));
+
+        int totalCapacity = service.getTotalCapacity(bogies);
+        assertEquals("Total capacity should be 300", 300, totalCapacity);
+    }
+
+    @Test
+    public void testSort_BasicSorting() {
+        int[] capacities = { 72, 56, 24, 70, 60 };
+        int[] expected = { 24, 56, 60, 70, 72 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Basic bubble sort should sort capacities in ascending order", expected, sorted);
+    }
+
+    @Test
+    public void testSort_AlreadySortedArray() {
+        int[] capacities = { 24, 56, 60, 70, 72 };
+        int[] expected = { 24, 56, 60, 70, 72 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Already sorted array should remain unchanged", expected, sorted);
+    }
+
+    @Test
+    public void testSort_DuplicateValues() {
+        int[] capacities = { 72, 56, 56, 24 };
+        int[] expected = { 24, 56, 56, 72 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Bubble sort should handle duplicate values correctly", expected, sorted);
+    }
+
+    @Test
+    public void testSort_SingleElementArray() {
+        int[] capacities = { 50 };
+        int[] expected = { 50 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Single-element array should remain unchanged", expected, sorted);
+    }
+
+    @Test
+    public void testSort_AllEqualValues() {
+        int[] capacities = { 40, 40, 40 };
+        int[] expected = { 40, 40, 40 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Array with all equal values should remain unchanged", expected, sorted);
     }
 }
