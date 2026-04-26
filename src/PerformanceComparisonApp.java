@@ -4,7 +4,7 @@ import java.util.stream.Collectors;
 
 public class PerformanceComparisonApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidCapacityException {
         System.out.println("=== UC13: Performance Comparison (Loops vs Streams) ===");
 
         List<PassengerBogie> bogies = new ArrayList<>();

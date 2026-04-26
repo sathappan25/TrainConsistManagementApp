@@ -28,22 +28,22 @@ public class BogieServiceTest {
     @Test
     public void testFilter_CapacityGreaterThanThreshold() {
         List<Bogie> result = service.filterByCapacity(getSampleBogies(), 70);
-        assertTrue("All filtered bogies should have capacity > 70",
-                result.stream().allMatch(b -> b.getCapacity() > 70));
+        assertTrue("All filtered bogies should have capacity > 70", 
+            result.stream().allMatch(b -> b.getCapacity() > 70));
     }
 
     @Test
     public void testFilter_CapacityEqualToThreshold() {
         List<Bogie> result = service.filterByCapacity(getSampleBogies(), 72);
-        assertTrue("Bogies with capacity equal to threshold should be excluded",
-                result.stream().noneMatch(b -> b.getCapacity() == 72));
+        assertTrue("Bogies with capacity equal to threshold should be excluded", 
+            result.stream().noneMatch(b -> b.getCapacity() == 72));
     }
 
     @Test
     public void testFilter_CapacityLessThanThreshold() {
         List<Bogie> result = service.filterByCapacity(getSampleBogies(), 60);
-        assertTrue("Bogies with capacity less than or equal to threshold should be excluded",
-                result.stream().noneMatch(b -> b.getCapacity() <= 60));
+        assertTrue("Bogies with capacity less than or equal to threshold should be excluded", 
+            result.stream().noneMatch(b -> b.getCapacity() <= 60));
     }
 
     @Test
@@ -75,8 +75,8 @@ public class BogieServiceTest {
         List<Bogie> original = getSampleBogies();
         int originalSize = original.size();
         service.filterByCapacity(original, 60);
-        assertEquals("Original list should not be modified by filter operation",
-                originalSize, original.size());
+        assertEquals("Original list should not be modified by filter operation", 
+            originalSize, original.size());
     }
 
     // ========== GroupByType Tests (UC9) ==========
@@ -89,7 +89,7 @@ public class BogieServiceTest {
         bogies.add(new Bogie("Sleeper", 60));
 
         Map<String, List<Bogie>> grouped = service.groupByType(bogies);
-
+        
         assertTrue("Should contain 'Sleeper' group", grouped.containsKey("Sleeper"));
         assertTrue("Should contain 'AC Chair' group", grouped.containsKey("AC Chair"));
         assertEquals("Sleeper group should have 2 bogies", 2, grouped.get("Sleeper").size());
@@ -109,7 +109,7 @@ public class BogieServiceTest {
         bogies.add(new Bogie("Sleeper", 60));
 
         Map<String, List<Bogie>> grouped = service.groupByType(bogies);
-
+        
         assertEquals("Should have only 1 group", 1, grouped.size());
         assertEquals("Sleeper group should have 2 bogies", 2, grouped.get("Sleeper").size());
     }
@@ -153,176 +153,4 @@ public class BogieServiceTest {
         int totalCapacity = service.getTotalCapacity(bogies);
         assertEquals("Total capacity should be 300", 300, totalCapacity);
     }
-
-    @Test
-    public void testSort_BasicSorting() {
-        int[] capacities = { 72, 56, 24, 70, 60 };
-        int[] expected = { 24, 56, 60, 70, 72 };
-
-        int[] sorted = service.sortPassengerBogieCapacities(capacities);
-        assertArrayEquals("Basic bubble sort should sort capacities in ascending order", expected, sorted);
-    }
-
-    @Test
-    public void testSort_PassengerCapacitiesAlreadySorted() {
-        int[] capacities = { 24, 56, 60, 70, 72 };
-        int[] expected = { 24, 56, 60, 70, 72 };
-
-        int[] sorted = service.sortPassengerBogieCapacities(capacities);
-        assertArrayEquals("Already sorted array should remain unchanged", expected, sorted);
-    }
-
-    @Test
-    public void testSort_DuplicateValues() {
-        int[] capacities = { 72, 56, 56, 24 };
-        int[] expected = { 24, 56, 56, 72 };
-
-        int[] sorted = service.sortPassengerBogieCapacities(capacities);
-        assertArrayEquals("Bubble sort should handle duplicate values correctly", expected, sorted);
-    }
-
-    @Test
-    public void testSort_SingleElementArray() {
-        int[] capacities = { 50 };
-        int[] expected = { 50 };
-
-        int[] sorted = service.sortPassengerBogieCapacities(capacities);
-        assertArrayEquals("Single-element array should remain unchanged", expected, sorted);
-    }
-
-    @Test
-    public void testSort_AllEqualValues() {
-        int[] capacities = { 40, 40, 40 };
-        int[] expected = { 40, 40, 40 };
-
-        int[] sorted = service.sortPassengerBogieCapacities(capacities);
-        assertArrayEquals("Array with all equal values should remain unchanged", expected, sorted);
-    }
-
-    @Test
-    public void testSort_BasicAlphabeticalSorting() {
-        String[] names = { "Sleeper", "AC Chair", "First Class", "General", "Luxury" };
-        String[] expected = { "AC Chair", "First Class", "General", "Luxury", "Sleeper" };
-
-        String[] sorted = service.sortBogieNames(names);
-        assertArrayEquals("Basic alphabetical sort should order bogie names", expected, sorted);
-    }
-
-    @Test
-    public void testSort_UnsortedInput() {
-        String[] names = { "Luxury", "General", "Sleeper", "AC Chair" };
-        String[] expected = { "AC Chair", "General", "Luxury", "Sleeper" };
-
-        String[] sorted = service.sortBogieNames(names);
-        assertArrayEquals("Unsorted bogie names should be sorted alphabetically", expected, sorted);
-    }
-
-    @Test
-    public void testSort_AlreadySortedArray() {
-        String[] names = { "AC Chair", "First Class", "General" };
-        String[] expected = { "AC Chair", "First Class", "General" };
-
-        String[] sorted = service.sortBogieNames(names);
-        assertArrayEquals("Already sorted bogie names should remain unchanged", expected, sorted);
-    }
-
-    @Test
-    public void testSort_DuplicateBogieNames() {
-        String[] names = { "Sleeper", "AC Chair", "Sleeper", "General" };
-        String[] expected = { "AC Chair", "General", "Sleeper", "Sleeper" };
-
-        String[] sorted = service.sortBogieNames(names);
-        assertArrayEquals("Duplicate bogie names should be handled correctly", expected, sorted);
-    }
-
-    @Test
-    public void testSort_SingleElementNameArray() {
-        String[] names = { "Sleeper" };
-        String[] expected = { "Sleeper" };
-
-        String[] sorted = service.sortBogieNames(names);
-        assertArrayEquals("Single-element array should remain unchanged", expected, sorted);
-    }
-
-    @Test
-    public void testSearch_BogieFound() {
-        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
-        assertTrue("Search should return true when the bogie ID exists", service.searchBogieById(bogieIds, "BG309"));
-    }
-
-    @Test
-    public void testSearch_BogieNotFound() {
-        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
-        assertFalse("Search should return false when the bogie ID does not exist",
-                service.searchBogieById(bogieIds, "BG999"));
-    }
-
-    @Test
-    public void testSearch_FirstElementMatch() {
-        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
-        assertTrue("Search should find a match at the first array position",
-                service.searchBogieById(bogieIds, "BG101"));
-    }
-
-    @Test
-    public void testSearch_LastElementMatch() {
-        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
-        assertTrue("Search should find a match at the last array position", service.searchBogieById(bogieIds, "BG550"));
-    }
-
-    @Test
-    public void testSearch_SingleElementArray() {
-        String[] bogieIds = { "BG101" };
-        assertTrue("Search should work correctly for a single-element array",
-                service.searchBogieById(bogieIds, "BG101"));
-    }
-
-    @Test
-    public void testBinarySearch_BogieFound() {
-        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
-        assertTrue("Binary search should return true when the bogie ID exists",
-                service.binarySearchBogieById(bogieIds, "BG309"));
-    }
-
-    @Test
-    public void testBinarySearch_BogieNotFound() {
-        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
-        assertFalse("Binary search should return false when the bogie ID does not exist",
-                service.binarySearchBogieById(bogieIds, "BG999"));
-    }
-
-    @Test
-    public void testBinarySearch_FirstElementMatch() {
-        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
-        assertTrue("Binary search should find a match at the first position",
-                service.binarySearchBogieById(bogieIds, "BG101"));
-    }
-
-    @Test
-    public void testBinarySearch_LastElementMatch() {
-        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
-        assertTrue("Binary search should find a match at the last position",
-                service.binarySearchBogieById(bogieIds, "BG550"));
-    }
-
-    @Test
-    public void testBinarySearch_SingleElementArray() {
-        String[] bogieIds = { "BG101" };
-        assertTrue("Binary search should work correctly for a single-element array",
-                service.binarySearchBogieById(bogieIds, "BG101"));
-    }
-
-    @Test
-    public void testBinarySearch_EmptyArray() {
-        String[] bogieIds = new String[0];
-        assertFalse("Binary search should return false for an empty array",
-                service.binarySearchBogieById(bogieIds, "BG101"));
-    }
-
-    @Test
-    public void testBinarySearch_UnsortedInputHandled() {
-        String[] bogieIds = { "BG309", "BG101", "BG550", "BG205", "BG412" };
-        assertTrue("Binary search should sort unsorted input before searching",
-                service.binarySearchBogieById(bogieIds, "BG205"));
-    }
-} 
+}

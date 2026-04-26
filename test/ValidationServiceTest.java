@@ -112,4 +112,4 @@ public class ValidationServiceTest {
     public void testRegex_Null_CargoCode() {
         assertFalse("Null Cargo Code should fail validation", service.isValidCargoCode(null));
     }
-} 
+}
