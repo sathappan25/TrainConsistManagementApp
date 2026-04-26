@@ -11,4 +11,4 @@ public class SafetyService {
                     || bogie.getCargo().equalsIgnoreCase("Petroleum")
                 );
     }
-}
+}      

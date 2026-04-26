@@ -62,7 +62,10 @@ public class BogieService {
 
     // UC18: Linear search for bogie ID in an unsorted array
     public boolean searchBogieById(String[] bogieIds, String searchId) {
-        if (bogieIds == null || searchId == null) {
+        if (bogieIds == null || bogieIds.length == 0) {
+            throw new IllegalStateException("Cannot search: no bogies available.");
+        }
+        if (searchId == null) {
             return false;
         }
 
@@ -77,7 +80,10 @@ public class BogieService {
 
     // UC19: Binary search for bogie ID in a sorted array
     public boolean binarySearchBogieById(String[] bogieIds, String searchId) {
-        if (bogieIds == null || searchId == null) {
+        if (bogieIds == null || bogieIds.length == 0) {
+            throw new IllegalStateException("Cannot search: no bogies available.");
+        }
+        if (searchId == null) {
             return false;
         }
 
