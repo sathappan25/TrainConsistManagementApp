@@ -28,22 +28,22 @@ public class BogieServiceTest {
     @Test
     public void testFilter_CapacityGreaterThanThreshold() {
         List<Bogie> result = service.filterByCapacity(getSampleBogies(), 70);
-        assertTrue("All filtered bogies should have capacity > 70", 
-            result.stream().allMatch(b -> b.getCapacity() > 70));
+        assertTrue("All filtered bogies should have capacity > 70",
+                result.stream().allMatch(b -> b.getCapacity() > 70));
     }
 
     @Test
     public void testFilter_CapacityEqualToThreshold() {
         List<Bogie> result = service.filterByCapacity(getSampleBogies(), 72);
-        assertTrue("Bogies with capacity equal to threshold should be excluded", 
-            result.stream().noneMatch(b -> b.getCapacity() == 72));
+        assertTrue("Bogies with capacity equal to threshold should be excluded",
+                result.stream().noneMatch(b -> b.getCapacity() == 72));
     }
 
     @Test
     public void testFilter_CapacityLessThanThreshold() {
         List<Bogie> result = service.filterByCapacity(getSampleBogies(), 60);
-        assertTrue("Bogies with capacity less than or equal to threshold should be excluded", 
-            result.stream().noneMatch(b -> b.getCapacity() <= 60));
+        assertTrue("Bogies with capacity less than or equal to threshold should be excluded",
+                result.stream().noneMatch(b -> b.getCapacity() <= 60));
     }
 
     @Test
@@ -75,8 +75,8 @@ public class BogieServiceTest {
         List<Bogie> original = getSampleBogies();
         int originalSize = original.size();
         service.filterByCapacity(original, 60);
-        assertEquals("Original list should not be modified by filter operation", 
-            originalSize, original.size());
+        assertEquals("Original list should not be modified by filter operation",
+                originalSize, original.size());
     }
 
     // ========== GroupByType Tests (UC9) ==========
@@ -89,7 +89,7 @@ public class BogieServiceTest {
         bogies.add(new Bogie("Sleeper", 60));
 
         Map<String, List<Bogie>> grouped = service.groupByType(bogies);
-        
+
         assertTrue("Should contain 'Sleeper' group", grouped.containsKey("Sleeper"));
         assertTrue("Should contain 'AC Chair' group", grouped.containsKey("AC Chair"));
         assertEquals("Sleeper group should have 2 bogies", 2, grouped.get("Sleeper").size());
@@ -109,7 +109,7 @@ public class BogieServiceTest {
         bogies.add(new Bogie("Sleeper", 60));
 
         Map<String, List<Bogie>> grouped = service.groupByType(bogies);
-        
+
         assertEquals("Should have only 1 group", 1, grouped.size());
         assertEquals("Sleeper group should have 2 bogies", 2, grouped.get("Sleeper").size());
     }
@@ -152,5 +152,50 @@ public class BogieServiceTest {
 
         int totalCapacity = service.getTotalCapacity(bogies);
         assertEquals("Total capacity should be 300", 300, totalCapacity);
+    }
+
+    @Test
+    public void testSort_BasicSorting() {
+        int[] capacities = { 72, 56, 24, 70, 60 };
+        int[] expected = { 24, 56, 60, 70, 72 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Basic bubble sort should sort capacities in ascending order", expected, sorted);
+    }
+
+    @Test
+    public void testSort_AlreadySortedArray() {
+        int[] capacities = { 24, 56, 60, 70, 72 };
+        int[] expected = { 24, 56, 60, 70, 72 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Already sorted array should remain unchanged", expected, sorted);
+    }
+
+    @Test
+    public void testSort_DuplicateValues() {
+        int[] capacities = { 72, 56, 56, 24 };
+        int[] expected = { 24, 56, 56, 72 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Bubble sort should handle duplicate values correctly", expected, sorted);
+    }
+
+    @Test
+    public void testSort_SingleElementArray() {
+        int[] capacities = { 50 };
+        int[] expected = { 50 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Single-element array should remain unchanged", expected, sorted);
+    }
+
+    @Test
+    public void testSort_AllEqualValues() {
+        int[] capacities = { 40, 40, 40 };
+        int[] expected = { 40, 40, 40 };
+
+        int[] sorted = service.sortPassengerBogieCapacities(capacities);
+        assertArrayEquals("Array with all equal values should remain unchanged", expected, sorted);
     }
 }

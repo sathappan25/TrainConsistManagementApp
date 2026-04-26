@@ -23,4 +23,28 @@ public class BogieService {
                 .map(Bogie::getCapacity)
                 .reduce(0, Integer::sum);
     }
+
+    // UC16: Sort passenger bogie capacities using Bubble Sort
+    public int[] sortPassengerBogieCapacities(int[] capacities) {
+        if (capacities == null) {
+            return null;
+        }
+
+        int[] sorted = new int[capacities.length];
+        for (int i = 0; i < capacities.length; i++) {
+            sorted[i] = capacities[i];
+        }
+
+        for (int pass = 0; pass < sorted.length - 1; pass++) {
+            for (int index = 0; index < sorted.length - 1 - pass; index++) {
+                if (sorted[index] > sorted[index + 1]) {
+                    int temp = sorted[index];
+                    sorted[index] = sorted[index + 1];
+                    sorted[index + 1] = temp;
+                }
+            }
+        }
+
+        return sorted;
+    }
 }
