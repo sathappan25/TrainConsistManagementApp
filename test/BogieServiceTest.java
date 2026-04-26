@@ -164,7 +164,7 @@ public class BogieServiceTest {
     }
 
     @Test
-    public void testSort_AlreadySortedArray() {
+    public void testSort_PassengerCapacitiesAlreadySorted() {
         int[] capacities = { 24, 56, 60, 70, 72 };
         int[] expected = { 24, 56, 60, 70, 72 };
 
@@ -197,5 +197,50 @@ public class BogieServiceTest {
 
         int[] sorted = service.sortPassengerBogieCapacities(capacities);
         assertArrayEquals("Array with all equal values should remain unchanged", expected, sorted);
+    }
+
+    @Test
+    public void testSort_BasicAlphabeticalSorting() {
+        String[] names = { "Sleeper", "AC Chair", "First Class", "General", "Luxury" };
+        String[] expected = { "AC Chair", "First Class", "General", "Luxury", "Sleeper" };
+
+        String[] sorted = service.sortBogieNames(names);
+        assertArrayEquals("Basic alphabetical sort should order bogie names", expected, sorted);
+    }
+
+    @Test
+    public void testSort_UnsortedInput() {
+        String[] names = { "Luxury", "General", "Sleeper", "AC Chair" };
+        String[] expected = { "AC Chair", "General", "Luxury", "Sleeper" };
+
+        String[] sorted = service.sortBogieNames(names);
+        assertArrayEquals("Unsorted bogie names should be sorted alphabetically", expected, sorted);
+    }
+
+    @Test
+    public void testSort_AlreadySortedArray() {
+        String[] names = { "AC Chair", "First Class", "General" };
+        String[] expected = { "AC Chair", "First Class", "General" };
+
+        String[] sorted = service.sortBogieNames(names);
+        assertArrayEquals("Already sorted bogie names should remain unchanged", expected, sorted);
+    }
+
+    @Test
+    public void testSort_DuplicateBogieNames() {
+        String[] names = { "Sleeper", "AC Chair", "Sleeper", "General" };
+        String[] expected = { "AC Chair", "General", "Sleeper", "Sleeper" };
+
+        String[] sorted = service.sortBogieNames(names);
+        assertArrayEquals("Duplicate bogie names should be handled correctly", expected, sorted);
+    }
+
+    @Test
+    public void testSort_SingleElementNameArray() {
+        String[] names = { "Sleeper" };
+        String[] expected = { "Sleeper" };
+
+        String[] sorted = service.sortBogieNames(names);
+        assertArrayEquals("Single-element array should remain unchanged", expected, sorted);
     }
 }

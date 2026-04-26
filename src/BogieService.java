@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,6 +46,17 @@ public class BogieService {
             }
         }
 
+        return sorted;
+    }
+
+    // UC17: Sort bogie type names using Arrays.sort()
+    public String[] sortBogieNames(String[] names) {
+        if (names == null) {
+            return null;
+        }
+
+        String[] sorted = Arrays.copyOf(names, names.length);
+        Arrays.sort(sorted);
         return sorted;
     }
 }
