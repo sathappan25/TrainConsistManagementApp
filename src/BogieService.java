@@ -59,4 +59,19 @@ public class BogieService {
         Arrays.sort(sorted);
         return sorted;
     }
+
+    // UC18: Linear search for bogie ID in an unsorted array
+    public boolean searchBogieById(String[] bogieIds, String searchId) {
+        if (bogieIds == null || searchId == null) {
+            return false;
+        }
+
+        for (String id : bogieIds) {
+            if (searchId.equals(id)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
