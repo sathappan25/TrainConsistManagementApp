@@ -68,4 +68,4 @@ public class PassengerBogieTest {
     public void testException_BoundaryValueZero() throws InvalidCapacityException {
         new PassengerBogie("Sleeper", 0);
     }
-} 
+}

@@ -1,42 +1,108 @@
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SafetyServiceTest {
 
-    public static void main(String[] args) {
-        SafetyService service = new SafetyService();
+    private SafetyService service;
 
-        // Test 1: All cylindrical bogies carry Petroleum (safe)
-        List<GoodsBogie> list1 = new ArrayList<>();
-        list1.add(new GoodsBogie("Cylindrical", "Petroleum"));
-        list1.add(new GoodsBogie("Rectangular", "Coal"));
-        boolean result1 = service.isTrainSafe(list1);
-        System.out.println("Test 1 - All safe: " + result1); // true
+    @Before
+    public void setUp() {
+        service = new SafetyService();
+    }
 
-        // Test 2: Cylindrical bogie carries invalid cargo (unsafe)
-        List<GoodsBogie> list2 = new ArrayList<>();
-        list2.add(new GoodsBogie("Cylindrical", "Coal"));
-        list2.add(new GoodsBogie("Rectangular", "Grain"));
-        boolean result2 = service.isTrainSafe(list2);
-        System.out.println("Test 2 - Unsafe due to Cylindrical bogie: " + result2); // false
+    // ========== Safety Validation Tests (UC12) ==========
 
-        // Test 3: Non-cylindrical bogies are flexible
-        List<GoodsBogie> list3 = new ArrayList<>();
-        list3.add(new GoodsBogie("Open", "Coal"));
-        list3.add(new GoodsBogie("Rectangular", "Grain"));
-        boolean result3 = service.isTrainSafe(list3);
-        System.out.println("Test 3 - Non-cylindrical only: " + result3); // true
+    @Test
+    public void testSafety_AllValidBogies() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        bogies.add(new GoodsBogie("Rectangular", "Coal"));
+        
+        assertTrue("Train with all valid bogies should be safe", service.isTrainSafe(bogies));
+    }
 
-        // Test 4: Mixed with one violation
-        List<GoodsBogie> list4 = new ArrayList<>();
-        list4.add(new GoodsBogie("Cylindrical", "Petroleum"));
-        list4.add(new GoodsBogie("Cylindrical", "Coal")); // violation
-        boolean result4 = service.isTrainSafe(list4);
-        System.out.println("Test 4 - Mixed with violation: " + result4); // false
+    @Test
+    public void testSafety_CylindricalWithInvalidCargo() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        bogies.add(new GoodsBogie("Cylindrical", "Coal")); // violation: Cylindrical can only carry Petroleum
+        bogies.add(new GoodsBogie("Rectangular", "Grain"));
+        
+        assertFalse("Train with cylindrical bogie carrying invalid cargo should be unsafe", 
+            service.isTrainSafe(bogies));
+    }
 
-        // Test 5: Empty list
-        List<GoodsBogie> list5 = new ArrayList<>();
-        boolean result5 = service.isTrainSafe(list5);
-        System.out.println("Test 5 - Empty list: " + result5); // true
+    @Test
+    public void testSafety_NonCylindricalBogiesOnly() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        bogies.add(new GoodsBogie("Rectangular", "Coal"));
+        bogies.add(new GoodsBogie("Open", "Grain"));
+        
+        assertTrue("Train with only non-cylindrical bogies should be safe", service.isTrainSafe(bogies));
+    }
+
+    @Test
+    public void testSafety_MixedWithViolation() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        bogies.add(new GoodsBogie("Cylindrical", "Coal")); // violation
+        
+        assertFalse("Train with at least one safety violation should be unsafe", 
+            service.isTrainSafe(bogies));
+    }
+
+    @Test
+    public void testSafety_EmptyBogieList() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        
+        assertTrue("Empty train should be considered safe", service.isTrainSafe(bogies));
+    }
+
+    @Test
+    public void testSafety_SingleCylindricalWithPetroleum() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        
+        assertTrue("Single cylindrical bogie with petroleum should be safe", service.isTrainSafe(bogies));
+    }
+
+    @Test
+    public void testSafety_MultipleCylindricalAllPetroleum() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        
+        assertTrue("Multiple cylindrical bogies all carrying petroleum should be safe", 
+            service.isTrainSafe(bogies));
+    }
+
+    @Test
+    public void testSafety_SingleCylindricalWithCoal() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        bogies.add(new GoodsBogie("Cylindrical", "Coal"));
+        
+        assertFalse("Cylindrical bogie carrying coal should be unsafe", service.isTrainSafe(bogies));
+    }
+
+    @Test
+    public void testSafety_RectangularBogieAnyCargoType() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        bogies.add(new GoodsBogie("Rectangular", "Coal"));
+        bogies.add(new GoodsBogie("Rectangular", "Grain"));
+        bogies.add(new GoodsBogie("Rectangular", "Petroleum"));
+        
+        assertTrue("Rectangular bogies can carry any cargo type safely", service.isTrainSafe(bogies));
+    }
+
+    @Test
+    public void testSafety_OpenBogieAnyCargoType() {
+        List<GoodsBogie> bogies = new ArrayList<>();
+        bogies.add(new GoodsBogie("Open", "Coal"));
+        bogies.add(new GoodsBogie("Open", "Grain"));
+        
+        assertTrue("Open bogies can carry any cargo type safely", service.isTrainSafe(bogies));
     }
 }

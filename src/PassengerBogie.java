@@ -1,14 +1,18 @@
 public class PassengerBogie {
-    private String name;
-    private int capacity;
+    private String type;   // e.g., "Sleeper", "AC Chair", "First Class"
+    private int capacity;  // number of seats
 
-    public PassengerBogie(String name, int capacity) {
-        this.name = name;
+    // Constructor with validation
+    public PassengerBogie(String type, int capacity) throws InvalidCapacityException {
+        if (capacity <= 0) {
+            throw new InvalidCapacityException("Capacity must be greater than zero");
+        }
+        this.type = type;
         this.capacity = capacity;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
     public int getCapacity() {
@@ -17,6 +21,6 @@ public class PassengerBogie {
 
     @Override
     public String toString() {
-        return name + " -> " + capacity;
+        return type + " -> " + capacity;
     }
 }
