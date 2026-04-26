@@ -243,4 +243,37 @@ public class BogieServiceTest {
         String[] sorted = service.sortBogieNames(names);
         assertArrayEquals("Single-element array should remain unchanged", expected, sorted);
     }
+
+    @Test
+    public void testSearch_BogieFound() {
+        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
+        assertTrue("Search should return true when the bogie ID exists", service.searchBogieById(bogieIds, "BG309"));
+    }
+
+    @Test
+    public void testSearch_BogieNotFound() {
+        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
+        assertFalse("Search should return false when the bogie ID does not exist",
+                service.searchBogieById(bogieIds, "BG999"));
+    }
+
+    @Test
+    public void testSearch_FirstElementMatch() {
+        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
+        assertTrue("Search should find a match at the first array position",
+                service.searchBogieById(bogieIds, "BG101"));
+    }
+
+    @Test
+    public void testSearch_LastElementMatch() {
+        String[] bogieIds = { "BG101", "BG205", "BG309", "BG412", "BG550" };
+        assertTrue("Search should find a match at the last array position", service.searchBogieById(bogieIds, "BG550"));
+    }
+
+    @Test
+    public void testSearch_SingleElementArray() {
+        String[] bogieIds = { "BG101" };
+        assertTrue("Search should work correctly for a single-element array",
+                service.searchBogieById(bogieIds, "BG101"));
+    }
 }
