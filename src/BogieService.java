@@ -74,4 +74,32 @@ public class BogieService {
 
         return false;
     }
+
+    // UC19: Binary search for bogie ID in a sorted array
+    public boolean binarySearchBogieById(String[] bogieIds, String searchId) {
+        if (bogieIds == null || searchId == null) {
+            return false;
+        }
+
+        String[] sortedIds = Arrays.copyOf(bogieIds, bogieIds.length);
+        Arrays.sort(sortedIds);
+
+        int low = 0;
+        int high = sortedIds.length - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int comparison = searchId.compareTo(sortedIds[mid]);
+
+            if (comparison == 0) {
+                return true;
+            } else if (comparison < 0) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        return false;
+    }
 }
